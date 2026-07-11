@@ -7,6 +7,7 @@ import courseRoutes from './routes/course.routes';
 import enrollmentRoutes from './routes/enrollment.routes';
 import adminRoutes from './routes/admin.routes';
 import qaRoutes from './routes/qa.routes';
+import reviewRoutes from './routes/review.routes';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/qa', qaRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'CourseNest Server Running ✅' });
