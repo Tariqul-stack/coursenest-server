@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import connectDB from './lib/db';
 import authRoutes from './routes/auth.routes';
 import courseRoutes from './routes/course.routes';
+import enrollmentRoutes from './routes/enrollment.routes';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/enrollments', enrollmentRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'CourseNest Server Running ✅' });
