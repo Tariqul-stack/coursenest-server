@@ -30,6 +30,7 @@ export const getCourses = async (req: Request, res: Response): Promise<void> => 
 
     if (category) query.category = category;
     if (level) query.level = level;
+    if (req.query.instructorId) query.instructor = req.query.instructorId;
     if (minPrice || maxPrice) {
       query.price = {};
       if (minPrice) query.price.$gte = Number(minPrice);
