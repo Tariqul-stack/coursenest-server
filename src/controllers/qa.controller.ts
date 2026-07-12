@@ -1,9 +1,6 @@
 import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
-import QAPost from '../models/QAPost';
-import QAAnswer from '../models/QAPost.ts';
 import { QAPost, QAAnswer } from '../models/QAPost';
-
 export const getPosts = async (req: Request, res: Response): Promise<void> => {
   try {
     const { search, tag, status, page = 1, limit = 10 } = req.query;
