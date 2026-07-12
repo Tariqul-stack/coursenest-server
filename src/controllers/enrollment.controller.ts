@@ -123,3 +123,40 @@ export const getCourseEnrollments = async (req: AuthRequest, res: Response): Pro
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
+// @desc    Get certificate by ID
+// @route   GET /api/enrollments/certificate/:certificateId
+// @access  Public
+export const getCertificate = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const enrollment = await Enrollment.findOne({
+      certificateId: req.params.certificateId,
+    })
+      .populate('student', 'name')
+      .populate({
+        path: 'course',
+        select: 'title',
+        populate: { path: 'instructor', select: 'name' },
+      });
+
+    if (!enrollment || !enrollment.certificateIssued) {
+      res.status(404).json({ message: 'Certificate not found' });
+      return;
+    }
+
+    const course = enrollment.course as any;
+
+    res.status(200).json({
+      success: true,
+      certificate: {
+        studentName: (enrollment.student as any).name,
+        courseTitle: course.title,
+        instructorName: course.instructor.name,
+        certificateId: enrollment.certificateId,
+        completedAt: enrollment.updatedAt,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
