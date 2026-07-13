@@ -52,12 +52,17 @@ export const getMyEnrollments = async (req: AuthRequest, res: Response): Promise
     const enrollments = await Enrollment.find({ student: req.user?.id })
       .populate({
         path: 'course',
-        populate: { path: 'instructor', select: 'name avatar' },
+        select: 'title thumbnail category instructor totalEnrollments averageRating curriculum',
+        populate: {
+          path: 'instructor',
+          select: 'name avatar',
+        },
       })
       .sort({ enrolledAt: -1 });
 
     res.status(200).json({ success: true, enrollments });
   } catch (error) {
+    console.error('getMyEnrollments error:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
