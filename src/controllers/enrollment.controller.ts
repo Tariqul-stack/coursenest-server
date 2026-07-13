@@ -165,3 +165,35 @@ export const getCertificate = async (req: Request, res: Response): Promise<void>
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
+
+export const enrollPaidCourse = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { courseId } = req.body;
+    const studentId = req.user?.id;
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      res.status(404).json({ message: 'Course not found' });
+      return;
+    }
+
+    const existing = await Enrollment.findOne({ student: studentId, course: courseId });
+    if (existing) {
+      res.status(400).json({ message: 'Already enrolled in this course' });
+      return;
+    }
+
+    const enrollment = await Enrollment.create({
+      student: studentId,
+      course: courseId,
+      paymentStatus: 'paid',
+    });
+
+    await Course.findByIdAndUpdate(courseId, { $inc: { totalEnrollments: 1 } });
+
+    res.status(201).json({ success: true, enrollment });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};

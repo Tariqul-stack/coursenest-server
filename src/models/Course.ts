@@ -1,37 +1,84 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-export interface IEnrollment extends Document {
-  student: mongoose.Types.ObjectId;
-  course: mongoose.Types.ObjectId;
-  enrolledAt: Date;
-  paymentStatus: 'free' | 'paid';
-  transactionId?: mongoose.Types.ObjectId;
-  completedLessons: string[];
-  progressPercent: number;
-  certificateIssued: boolean;
-  certificateId?: string;
+export interface ILesson {
+  lessonId: string;
+  title: string;
+  videoUrl: string;
+  duration: number;
+  order: number;
+  isFreePreview: boolean;
+}
+
+export interface IModule {
+  moduleId: string;
+  title: string;
+  order: number;
+  lessons: ILesson[];
+}
+
+export interface ICourse extends Document {
+  title: string;
+  shortDescription: string;
+  fullDescription: string;
+  thumbnail: string;
+  price: number;
+  isFree: boolean;
+  category: string;
+  level: 'Beginner' | 'Intermediate' | 'Advanced';
+  tags: string[];
+  instructor: mongoose.Types.ObjectId;
+  curriculum: IModule[];
+  status: 'draft' | 'published';
+  totalEnrollments: number;
+  averageRating: number;
+  totalReviews: number;
+  createdAt: Date;
   updatedAt: Date;
 }
 
-const EnrollmentSchema = new Schema<IEnrollment>(
+const LessonSchema = new Schema<ILesson>({
+  lessonId: { type: String, required: true },
+  title: { type: String, required: true },
+  videoUrl: { type: String, default: '' },
+  duration: { type: Number, default: 0 },
+  order: { type: Number, required: true },
+  isFreePreview: { type: Boolean, default: false },
+});
+
+const ModuleSchema = new Schema<IModule>({
+  moduleId: { type: String, required: true },
+  title: { type: String, required: true },
+  order: { type: Number, required: true },
+  lessons: [LessonSchema],
+});
+
+const CourseSchema = new Schema<ICourse>(
   {
-    student: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    course: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
-    enrolledAt: { type: Date, default: Date.now },
-    paymentStatus: {
+    title: { type: String, required: true, trim: true, maxlength: 100 },
+    shortDescription: { type: String, required: true, maxlength: 200 },
+    fullDescription: { type: String, required: true },
+    thumbnail: { type: String, required: true },
+    price: { type: Number, default: 0 },
+    isFree: { type: Boolean, default: true },
+    category: {
       type: String,
-      enum: ['free', 'paid'],
-      default: 'free',
+      required: true,
+      enum: ['Web Development', 'UI/UX Design', 'Data Science', 'Digital Marketing', 'Mobile Development', 'Cybersecurity', 'Business', 'Photography'],
     },
-    transactionId: { type: Schema.Types.ObjectId, ref: 'Transaction' },
-    completedLessons: [{ type: String }],
-    progressPercent: { type: Number, default: 0 },
-    certificateIssued: { type: Boolean, default: false },
-    certificateId: { type: String },
+    level: {
+      type: String,
+      enum: ['Beginner', 'Intermediate', 'Advanced'],
+      required: true,
+    },
+    tags: [{ type: String }],
+    instructor: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    curriculum: [ModuleSchema],
+    status: { type: String, enum: ['draft', 'published'], default: 'draft' },
+    totalEnrollments: { type: Number, default: 0 },
+    averageRating: { type: Number, default: 0 },
+    totalReviews: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
 
-EnrollmentSchema.index({ student: 1, course: 1 }, { unique: true });
-
-export default mongoose.model<IEnrollment>('Enrollment', EnrollmentSchema);
+export default mongoose.model<ICourse>('Course', CourseSchema);

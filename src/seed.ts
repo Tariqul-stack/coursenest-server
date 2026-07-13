@@ -11,14 +11,12 @@ const seed = async () => {
     await mongoose.connect(process.env.MONGODB_URI as string);
     console.log('MongoDB Connected ✅');
 
-    // Clear existing data
     await User.deleteMany({});
     await Course.deleteMany({});
     console.log('Cleared existing data ✅');
 
     const hashedPassword = await bcrypt.hash('admin123', 12);
 
-    // Create Users
     const admin = await User.create({
       name: 'Admin User',
       email: 'admin@coursenest.com',
@@ -57,12 +55,11 @@ const seed = async () => {
 
     console.log('Users created ✅');
 
-    // Create Courses
-    const courses = await Course.insertMany([
+    await Course.insertMany([
       {
         title: 'Complete React Developer Course 2025',
         shortDescription: 'Master React from scratch with hooks, context, Redux and real projects.',
-        fullDescription: 'This comprehensive React course will take you from beginner to advanced. You will learn React fundamentals, hooks, context API, Redux toolkit, React Query, and build 5 real-world projects including an e-commerce app and a social media platform.',
+        fullDescription: 'This comprehensive React course will take you from beginner to advanced. You will learn React fundamentals, hooks, context API, Redux toolkit, React Query, and build 5 real-world projects.',
         thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&auto=format&fit=crop',
         price: 49.99,
         isFree: false,
@@ -98,7 +95,7 @@ const seed = async () => {
       {
         title: 'UI/UX Design Masterclass with Figma',
         shortDescription: 'Learn professional UI/UX design from scratch using Figma.',
-        fullDescription: 'Master the art of UI/UX design with this comprehensive Figma course. You will learn design principles, wireframing, prototyping, user research, and design systems. By the end you will have a professional portfolio with 3 complete app designs.',
+        fullDescription: 'Master the art of UI/UX design with this comprehensive Figma course. You will learn design principles, wireframing, prototyping, user research, and design systems.',
         thumbnail: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&auto=format&fit=crop',
         price: 39.99,
         isFree: false,
@@ -125,7 +122,7 @@ const seed = async () => {
       {
         title: 'Node.js & Express Backend Development',
         shortDescription: 'Build scalable REST APIs with Node.js, Express, and MongoDB.',
-        fullDescription: 'Learn backend development with Node.js and Express. This course covers REST API design, authentication with JWT, MongoDB with Mongoose, file uploads, payment integration with Stripe, and deployment to production.',
+        fullDescription: 'Learn backend development with Node.js and Express. This course covers REST API design, authentication with JWT, MongoDB with Mongoose, and deployment.',
         thumbnail: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=800&auto=format&fit=crop',
         price: 44.99,
         isFree: false,
@@ -152,7 +149,7 @@ const seed = async () => {
       {
         title: 'Python for Data Science & Machine Learning',
         shortDescription: 'Master Python, Pandas, NumPy, and Scikit-learn for data science.',
-        fullDescription: 'This complete data science course covers Python programming, data manipulation with Pandas, numerical computing with NumPy, data visualization with Matplotlib and Seaborn, and machine learning with Scikit-learn.',
+        fullDescription: 'This complete data science course covers Python programming, data manipulation with Pandas, numerical computing with NumPy, data visualization, and machine learning.',
         thumbnail: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&auto=format&fit=crop',
         price: 0,
         isFree: true,
@@ -178,7 +175,7 @@ const seed = async () => {
       {
         title: 'Digital Marketing Complete Guide',
         shortDescription: 'Master SEO, social media marketing, email campaigns, and paid ads.',
-        fullDescription: 'Learn digital marketing from scratch. This course covers search engine optimization, social media marketing, email marketing, Google Ads, Facebook Ads, content marketing, and analytics. Perfect for entrepreneurs and marketing professionals.',
+        fullDescription: 'Learn digital marketing from scratch. This course covers SEO, social media marketing, email marketing, Google Ads, Facebook Ads, content marketing, and analytics.',
         thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop',
         price: 34.99,
         isFree: false,
@@ -203,8 +200,8 @@ const seed = async () => {
       },
       {
         title: 'TypeScript Complete Developer Guide',
-        shortDescription: 'Master TypeScript from basics to advanced — with React and Node.js.',
-        fullDescription: 'This TypeScript course covers everything from basic types to advanced generics, decorators, and design patterns. You will build real projects with TypeScript, React, and Node.js to solidify your understanding.',
+        shortDescription: 'Master TypeScript from basics to advanced with React and Node.js.',
+        fullDescription: 'This TypeScript course covers everything from basic types to advanced generics, decorators, and design patterns. Build real projects with TypeScript, React, and Node.js.',
         thumbnail: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&auto=format&fit=crop',
         price: 0,
         isFree: true,
@@ -231,7 +228,7 @@ const seed = async () => {
       {
         title: 'Mobile App Development with React Native',
         shortDescription: 'Build iOS and Android apps with React Native and Expo.',
-        fullDescription: 'Learn to build cross-platform mobile apps using React Native and Expo. This course covers navigation, state management, API integration, push notifications, and deploying to App Store and Google Play.',
+        fullDescription: 'Learn to build cross-platform mobile apps using React Native and Expo. This course covers navigation, state management, API integration, push notifications, and deployment.',
         thumbnail: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&auto=format&fit=crop',
         price: 54.99,
         isFree: false,
@@ -257,7 +254,7 @@ const seed = async () => {
       {
         title: 'Cybersecurity Fundamentals',
         shortDescription: 'Learn ethical hacking, network security, and penetration testing.',
-        fullDescription: 'This cybersecurity course covers network fundamentals, ethical hacking techniques, penetration testing tools, web application security, and how to protect systems from common attacks. Perfect for IT professionals.',
+        fullDescription: 'This cybersecurity course covers network fundamentals, ethical hacking techniques, penetration testing tools, web application security, and how to protect systems from attacks.',
         thumbnail: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop',
         price: 59.99,
         isFree: false,
@@ -282,7 +279,7 @@ const seed = async () => {
       },
     ]);
 
-    console.log(`${courses.length} courses created ✅`);
+    console.log('8 courses created ✅');
     console.log('\n=== Demo Credentials ===');
     console.log('Admin:   admin@coursenest.com / admin123');
     console.log('Teacher: teacher@coursenest.com / admin123');
