@@ -1,5 +1,11 @@
-import jwt from 'jsonwebtoken';
-export const verifyToken = (req, res, next) => {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.authorizeRoles = exports.verifyToken = void 0;
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         res.status(401).json({ message: 'No token, authorization denied' });
@@ -7,7 +13,7 @@ export const verifyToken = (req, res, next) => {
     }
     const token = authHeader.split(' ')[1];
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
         next();
     }
@@ -15,7 +21,8 @@ export const verifyToken = (req, res, next) => {
         res.status(401).json({ message: 'Token is not valid' });
     }
 };
-export const authorizeRoles = (...roles) => {
+exports.verifyToken = verifyToken;
+const authorizeRoles = (...roles) => {
     return (req, res, next) => {
         if (!req.user || !roles.includes(req.user.role)) {
             res.status(403).json({ message: 'Access denied' });
@@ -24,3 +31,4 @@ export const authorizeRoles = (...roles) => {
         next();
     };
 };
+exports.authorizeRoles = authorizeRoles;

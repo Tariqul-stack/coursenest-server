@@ -1,29 +1,34 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import connectDB from './lib/db';
-import authRoutes from './routes/auth.routes';
-import courseRoutes from './routes/course.routes';
-import enrollmentRoutes from './routes/enrollment.routes';
-import adminRoutes from './routes/admin.routes';
-import qaRoutes from './routes/qa.routes';
-import reviewRoutes from './routes/review.routes';
-dotenv.config();
-const app = express();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const db_1 = __importDefault(require("./lib/db"));
+const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
+const course_routes_1 = __importDefault(require("./routes/course.routes"));
+const enrollment_routes_1 = __importDefault(require("./routes/enrollment.routes"));
+const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
+const qa_routes_1 = __importDefault(require("./routes/qa.routes"));
+const review_routes_1 = __importDefault(require("./routes/review.routes"));
+dotenv_1.default.config();
+const app = (0, express_1.default)();
 // Connect Database
-connectDB();
-app.use(cors({
+(0, db_1.default)();
+app.use((0, cors_1.default)({
     origin: process.env.CLIENT_URL || '*',
     credentials: true,
 }));
-app.use(express.json());
+app.use(express_1.default.json());
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/courses', courseRoutes);
-app.use('/api/enrollments', enrollmentRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/qa', qaRoutes);
-app.use('/api/reviews', reviewRoutes);
+app.use('/api/auth', auth_routes_1.default);
+app.use('/api/courses', course_routes_1.default);
+app.use('/api/enrollments', enrollment_routes_1.default);
+app.use('/api/admin', admin_routes_1.default);
+app.use('/api/qa', qa_routes_1.default);
+app.use('/api/reviews', review_routes_1.default);
 app.get('/', (req, res) => {
     res.json({ message: 'CourseNest Server Running ✅' });
 });
@@ -33,4 +38,4 @@ if (process.env.NODE_ENV !== 'production') {
         console.log(`Server running on port ${PORT} 🚀`);
     });
 }
-export default app;
+exports.default = app;

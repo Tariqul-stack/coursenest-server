@@ -1,8 +1,14 @@
-import Course from '../models/Course';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMyCourses = exports.toggleStatus = exports.deleteCourse = exports.updateCourse = exports.createCourse = exports.getCourse = exports.getCourses = void 0;
+const Course_1 = __importDefault(require("../models/Course"));
 // @desc    Get all published courses
 // @route   GET /api/courses
 // @access  Public
-export const getCourses = async (req, res) => {
+const getCourses = async (req, res) => {
     try {
         const { search, category, level, minPrice, maxPrice, sort, page = 1, limit = 8, } = req.query;
         const query = { status: 'published' };
@@ -39,12 +45,12 @@ export const getCourses = async (req, res) => {
         const limitNum = Number(limit);
         const skip = (pageNum - 1) * limitNum;
         const [courses, total] = await Promise.all([
-            Course.find(query)
+            Course_1.default.find(query)
                 .populate('instructor', 'name avatar')
                 .sort(sortOption)
                 .skip(skip)
                 .limit(limitNum),
-            Course.countDocuments(query),
+            Course_1.default.countDocuments(query),
         ]);
         res.status(200).json({
             success: true,
@@ -60,12 +66,13 @@ export const getCourses = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.getCourses = getCourses;
 // @desc    Get single course
 // @route   GET /api/courses/:id
 // @access  Public
-export const getCourse = async (req, res) => {
+const getCourse = async (req, res) => {
     try {
-        const course = await Course.findById(req.params.id).populate('instructor', 'name avatar bio');
+        const course = await Course_1.default.findById(req.params.id).populate('instructor', 'name avatar bio');
         if (!course) {
             res.status(404).json({ message: 'Course not found' });
             return;
@@ -76,13 +83,14 @@ export const getCourse = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.getCourse = getCourse;
 // @desc    Create course
 // @route   POST /api/courses
 // @access  Teacher
-export const createCourse = async (req, res) => {
+const createCourse = async (req, res) => {
     try {
         const { title, shortDescription, fullDescription, thumbnail, price, category, level, tags, } = req.body;
-        const course = await Course.create({
+        const course = await Course_1.default.create({
             title,
             shortDescription,
             fullDescription,
@@ -101,12 +109,13 @@ export const createCourse = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.createCourse = createCourse;
 // @desc    Update course
 // @route   PUT /api/courses/:id
 // @access  Teacher (owner)
-export const updateCourse = async (req, res) => {
+const updateCourse = async (req, res) => {
     try {
-        const course = await Course.findById(req.params.id);
+        const course = await Course_1.default.findById(req.params.id);
         if (!course) {
             res.status(404).json({ message: 'Course not found' });
             return;
@@ -118,19 +127,20 @@ export const updateCourse = async (req, res) => {
         if (req.body.price !== undefined) {
             req.body.isFree = Number(req.body.price) === 0;
         }
-        const updated = await Course.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+        const updated = await Course_1.default.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
         res.status(200).json({ success: true, course: updated });
     }
     catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.updateCourse = updateCourse;
 // @desc    Delete course
 // @route   DELETE /api/courses/:id
 // @access  Teacher (owner) / Admin
-export const deleteCourse = async (req, res) => {
+const deleteCourse = async (req, res) => {
     try {
-        const course = await Course.findById(req.params.id);
+        const course = await Course_1.default.findById(req.params.id);
         if (!course) {
             res.status(404).json({ message: 'Course not found' });
             return;
@@ -146,12 +156,13 @@ export const deleteCourse = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.deleteCourse = deleteCourse;
 // @desc    Toggle course status
 // @route   PATCH /api/courses/:id/status
 // @access  Teacher (owner) / Admin
-export const toggleStatus = async (req, res) => {
+const toggleStatus = async (req, res) => {
     try {
-        const course = await Course.findById(req.params.id);
+        const course = await Course_1.default.findById(req.params.id);
         if (!course) {
             res.status(404).json({ message: 'Course not found' });
             return;
@@ -168,12 +179,13 @@ export const toggleStatus = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.toggleStatus = toggleStatus;
 // @desc    Get teacher's own courses
 // @route   GET /api/courses/my-courses
 // @access  Teacher
-export const getMyCourses = async (req, res) => {
+const getMyCourses = async (req, res) => {
     try {
-        const courses = await Course.find({ instructor: req.user?.id }).sort({
+        const courses = await Course_1.default.find({ instructor: req.user?.id }).sort({
             createdAt: -1,
         });
         res.status(200).json({ success: true, courses });
@@ -182,3 +194,4 @@ export const getMyCourses = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.getMyCourses = getMyCourses;

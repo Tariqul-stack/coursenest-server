@@ -1,14 +1,20 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import User from '../models/User';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getMe = exports.login = exports.register = void 0;
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const User_1 = __importDefault(require("../models/User"));
 // Generate JWT Token
 const generateToken = (id, role) => {
-    return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    return jsonwebtoken_1.default.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };
 // @desc    Register new user
 // @route   POST /api/auth/register
 // @access  Public
-export const register = async (req, res) => {
+const register = async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
         // Validation
@@ -17,15 +23,15 @@ export const register = async (req, res) => {
             return;
         }
         // Check if user exists
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User_1.default.findOne({ email });
         if (existingUser) {
             res.status(400).json({ message: 'User already exists with this email' });
             return;
         }
         // Hash password
-        const hashedPassword = await bcrypt.hash(password, 12);
+        const hashedPassword = await bcryptjs_1.default.hash(password, 12);
         // Create user
-        const user = await User.create({
+        const user = await User_1.default.create({
             name,
             email,
             password: hashedPassword,
@@ -49,10 +55,11 @@ export const register = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.register = register;
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
-export const login = async (req, res) => {
+const login = async (req, res) => {
     try {
         const { email, password } = req.body;
         // Validation
@@ -61,13 +68,13 @@ export const login = async (req, res) => {
             return;
         }
         // Check user exists
-        const user = await User.findOne({ email });
+        const user = await User_1.default.findOne({ email });
         if (!user) {
             res.status(401).json({ message: 'Invalid email or password' });
             return;
         }
         // Check password
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcryptjs_1.default.compare(password, user.password);
         if (!isMatch) {
             res.status(401).json({ message: 'Invalid email or password' });
             return;
@@ -90,12 +97,13 @@ export const login = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.login = login;
 // @desc    Get current user
 // @route   GET /api/auth/me
 // @access  Private
-export const getMe = async (req, res) => {
+const getMe = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select('-password');
+        const user = await User_1.default.findById(req.user.id).select('-password');
         if (!user) {
             res.status(404).json({ message: 'User not found' });
             return;
@@ -106,3 +114,4 @@ export const getMe = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.getMe = getMe;

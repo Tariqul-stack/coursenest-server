@@ -1,11 +1,16 @@
-import express from 'express';
-import { enrollCourse, enrollPaidCourse, getMyEnrollments, updateProgress, getCourseEnrollments, getCertificate, } from '../controllers/enrollment.controller';
-import { verifyToken, authorizeRoles } from '../middleware/auth.middleware';
-const router = express.Router();
-router.get('/certificate/:certificateId', getCertificate);
-router.post('/', verifyToken, authorizeRoles('student', 'teacher', 'admin'), enrollCourse);
-router.post('/paid', verifyToken, authorizeRoles('student', 'teacher', 'admin'), enrollPaidCourse);
-router.get('/my', verifyToken, getMyEnrollments);
-router.patch('/:id/progress', verifyToken, updateProgress);
-router.get('/course/:courseId', verifyToken, authorizeRoles('teacher', 'admin'), getCourseEnrollments);
-export default router;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const enrollment_controller_1 = require("../controllers/enrollment.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const router = express_1.default.Router();
+router.get('/certificate/:certificateId', enrollment_controller_1.getCertificate);
+router.post('/', auth_middleware_1.verifyToken, (0, auth_middleware_1.authorizeRoles)('student', 'teacher', 'admin'), enrollment_controller_1.enrollCourse);
+router.post('/paid', auth_middleware_1.verifyToken, (0, auth_middleware_1.authorizeRoles)('student', 'teacher', 'admin'), enrollment_controller_1.enrollPaidCourse);
+router.get('/my', auth_middleware_1.verifyToken, enrollment_controller_1.getMyEnrollments);
+router.patch('/:id/progress', auth_middleware_1.verifyToken, enrollment_controller_1.updateProgress);
+router.get('/course/:courseId', auth_middleware_1.verifyToken, (0, auth_middleware_1.authorizeRoles)('teacher', 'admin'), enrollment_controller_1.getCourseEnrollments);
+exports.default = router;

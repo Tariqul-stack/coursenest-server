@@ -1,18 +1,23 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
-import dotenv from 'dotenv';
-import User from './models/User';
-import Course from './models/Course';
-dotenv.config();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose_1 = __importDefault(require("mongoose"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const User_1 = __importDefault(require("./models/User"));
+const Course_1 = __importDefault(require("./models/Course"));
+dotenv_1.default.config();
 const seed = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URI);
+        await mongoose_1.default.connect(process.env.MONGODB_URI);
         console.log('MongoDB Connected ✅');
-        await User.deleteMany({});
-        await Course.deleteMany({});
+        await User_1.default.deleteMany({});
+        await Course_1.default.deleteMany({});
         console.log('Cleared existing data ✅');
-        const hashedPassword = await bcrypt.hash('admin123', 12);
-        const admin = await User.create({
+        const hashedPassword = await bcryptjs_1.default.hash('admin123', 12);
+        const admin = await User_1.default.create({
             name: 'Admin User',
             email: 'admin@coursenest.com',
             password: hashedPassword,
@@ -20,7 +25,7 @@ const seed = async () => {
             bio: 'Platform administrator',
             avatar: 'https://i.pravatar.cc/150?img=1',
         });
-        const teacher1 = await User.create({
+        const teacher1 = await User_1.default.create({
             name: 'Sarah Johnson',
             email: 'teacher@coursenest.com',
             password: hashedPassword,
@@ -28,7 +33,7 @@ const seed = async () => {
             bio: 'Full-stack developer with 8 years of experience. Passionate about teaching React and Node.js.',
             avatar: 'https://i.pravatar.cc/150?img=5',
         });
-        const teacher2 = await User.create({
+        const teacher2 = await User_1.default.create({
             name: 'Michael Chen',
             email: 'teacher2@coursenest.com',
             password: hashedPassword,
@@ -36,7 +41,7 @@ const seed = async () => {
             bio: 'UI/UX designer and Figma expert. I have helped 10,000+ students master design.',
             avatar: 'https://i.pravatar.cc/150?img=3',
         });
-        const student = await User.create({
+        const student = await User_1.default.create({
             name: 'Alex Student',
             email: 'student@coursenest.com',
             password: hashedPassword,
@@ -45,7 +50,7 @@ const seed = async () => {
             avatar: 'https://i.pravatar.cc/150?img=9',
         });
         console.log('Users created ✅');
-        await Course.insertMany([
+        await Course_1.default.insertMany([
             {
                 title: 'Complete React Developer Course 2025',
                 shortDescription: 'Master React from scratch with hooks, context, Redux and real projects.',

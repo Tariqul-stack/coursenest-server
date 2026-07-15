@@ -1,14 +1,20 @@
-import Enrollment from '../models/Enrollment';
-import Course from '../models/Course';
-import { v4 as uuidv4 } from 'uuid';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.enrollPaidCourse = exports.getCertificate = exports.getCourseEnrollments = exports.updateProgress = exports.getMyEnrollments = exports.enrollCourse = void 0;
+const Enrollment_1 = __importDefault(require("../models/Enrollment"));
+const Course_1 = __importDefault(require("../models/Course"));
+const uuid_1 = require("uuid");
 // @desc    Enroll in a course (free)
 // @route   POST /api/enrollments
 // @access  Student
-export const enrollCourse = async (req, res) => {
+const enrollCourse = async (req, res) => {
     try {
         const { courseId } = req.body;
         const studentId = req.user?.id;
-        const course = await Course.findById(courseId);
+        const course = await Course_1.default.findById(courseId);
         if (!course) {
             res.status(404).json({ message: 'Course not found' });
             return;
@@ -17,30 +23,31 @@ export const enrollCourse = async (req, res) => {
             res.status(400).json({ message: 'This is a paid course. Please complete payment first.' });
             return;
         }
-        const existing = await Enrollment.findOne({ student: studentId, course: courseId });
+        const existing = await Enrollment_1.default.findOne({ student: studentId, course: courseId });
         if (existing) {
             res.status(400).json({ message: 'Already enrolled in this course' });
             return;
         }
-        const enrollment = await Enrollment.create({
+        const enrollment = await Enrollment_1.default.create({
             student: studentId,
             course: courseId,
             paymentStatus: 'free',
         });
         // Increment enrollment count
-        await Course.findByIdAndUpdate(courseId, { $inc: { totalEnrollments: 1 } });
+        await Course_1.default.findByIdAndUpdate(courseId, { $inc: { totalEnrollments: 1 } });
         res.status(201).json({ success: true, enrollment });
     }
     catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.enrollCourse = enrollCourse;
 // @desc    Get my enrollments
 // @route   GET /api/enrollments/my
 // @access  Student
-export const getMyEnrollments = async (req, res) => {
+const getMyEnrollments = async (req, res) => {
     try {
-        const enrollments = await Enrollment.find({ student: req.user?.id })
+        const enrollments = await Enrollment_1.default.find({ student: req.user?.id })
             .populate({
             path: 'course',
             select: 'title thumbnail category instructor totalEnrollments averageRating curriculum',
@@ -57,13 +64,14 @@ export const getMyEnrollments = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.getMyEnrollments = getMyEnrollments;
 // @desc    Update lesson progress
 // @route   PATCH /api/enrollments/:id/progress
 // @access  Student
-export const updateProgress = async (req, res) => {
+const updateProgress = async (req, res) => {
     try {
         const { lessonId } = req.body;
-        const enrollment = await Enrollment.findById(req.params.id);
+        const enrollment = await Enrollment_1.default.findById(req.params.id);
         if (!enrollment) {
             res.status(404).json({ message: 'Enrollment not found' });
             return;
@@ -77,14 +85,14 @@ export const updateProgress = async (req, res) => {
             enrollment.completedLessons.push(lessonId);
         }
         // Get total lessons from course
-        const course = await Course.findById(enrollment.course);
+        const course = await Course_1.default.findById(enrollment.course);
         const totalLessons = course?.curriculum?.reduce((acc, mod) => acc + mod.lessons.length, 0) || 1;
         // Calculate progress
         enrollment.progressPercent = Math.round((enrollment.completedLessons.length / totalLessons) * 100);
         // Issue certificate if 100%
         if (enrollment.progressPercent === 100 && !enrollment.certificateIssued) {
             enrollment.certificateIssued = true;
-            enrollment.certificateId = `CN-${Date.now()}-${uuidv4().slice(0, 6).toUpperCase()}`;
+            enrollment.certificateId = `CN-${Date.now()}-${(0, uuid_1.v4)().slice(0, 6).toUpperCase()}`;
         }
         await enrollment.save();
         res.status(200).json({ success: true, enrollment });
@@ -93,12 +101,13 @@ export const updateProgress = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.updateProgress = updateProgress;
 // @desc    Get enrollments for a course
 // @route   GET /api/enrollments/course/:courseId
 // @access  Teacher / Admin
-export const getCourseEnrollments = async (req, res) => {
+const getCourseEnrollments = async (req, res) => {
     try {
-        const enrollments = await Enrollment.find({ course: req.params.courseId })
+        const enrollments = await Enrollment_1.default.find({ course: req.params.courseId })
             .populate('student', 'name email avatar')
             .sort({ enrolledAt: -1 });
         res.status(200).json({ success: true, enrollments });
@@ -107,12 +116,13 @@ export const getCourseEnrollments = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.getCourseEnrollments = getCourseEnrollments;
 // @desc    Get certificate by ID
 // @route   GET /api/enrollments/certificate/:certificateId
 // @access  Public
-export const getCertificate = async (req, res) => {
+const getCertificate = async (req, res) => {
     try {
-        const enrollment = await Enrollment.findOne({
+        const enrollment = await Enrollment_1.default.findOne({
             certificateId: req.params.certificateId,
         })
             .populate('student', 'name')
@@ -141,29 +151,31 @@ export const getCertificate = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
-export const enrollPaidCourse = async (req, res) => {
+exports.getCertificate = getCertificate;
+const enrollPaidCourse = async (req, res) => {
     try {
         const { courseId } = req.body;
         const studentId = req.user?.id;
-        const course = await Course.findById(courseId);
+        const course = await Course_1.default.findById(courseId);
         if (!course) {
             res.status(404).json({ message: 'Course not found' });
             return;
         }
-        const existing = await Enrollment.findOne({ student: studentId, course: courseId });
+        const existing = await Enrollment_1.default.findOne({ student: studentId, course: courseId });
         if (existing) {
             res.status(400).json({ message: 'Already enrolled in this course' });
             return;
         }
-        const enrollment = await Enrollment.create({
+        const enrollment = await Enrollment_1.default.create({
             student: studentId,
             course: courseId,
             paymentStatus: 'paid',
         });
-        await Course.findByIdAndUpdate(courseId, { $inc: { totalEnrollments: 1 } });
+        await Course_1.default.findByIdAndUpdate(courseId, { $inc: { totalEnrollments: 1 } });
         res.status(201).json({ success: true, enrollment });
     }
     catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+exports.enrollPaidCourse = enrollPaidCourse;
