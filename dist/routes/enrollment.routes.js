@@ -1,0 +1,11 @@
+import express from 'express';
+import { enrollCourse, enrollPaidCourse, getMyEnrollments, updateProgress, getCourseEnrollments, getCertificate, } from '../controllers/enrollment.controller';
+import { verifyToken, authorizeRoles } from '../middleware/auth.middleware';
+const router = express.Router();
+router.get('/certificate/:certificateId', getCertificate);
+router.post('/', verifyToken, authorizeRoles('student', 'teacher', 'admin'), enrollCourse);
+router.post('/paid', verifyToken, authorizeRoles('student', 'teacher', 'admin'), enrollPaidCourse);
+router.get('/my', verifyToken, getMyEnrollments);
+router.patch('/:id/progress', verifyToken, updateProgress);
+router.get('/course/:courseId', verifyToken, authorizeRoles('teacher', 'admin'), getCourseEnrollments);
+export default router;
