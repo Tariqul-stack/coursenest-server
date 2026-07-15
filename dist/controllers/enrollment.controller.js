@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.enrollPaidCourse = exports.getCertificate = exports.getCourseEnrollments = exports.updateProgress = exports.getMyEnrollments = exports.enrollCourse = void 0;
 const Enrollment_1 = __importDefault(require("../models/Enrollment"));
 const Course_1 = __importDefault(require("../models/Course"));
-const uuid_1 = require("uuid");
+const crypto_1 = require("crypto");
 // @desc    Enroll in a course (free)
 // @route   POST /api/enrollments
 // @access  Student
@@ -92,7 +92,7 @@ const updateProgress = async (req, res) => {
         // Issue certificate if 100%
         if (enrollment.progressPercent === 100 && !enrollment.certificateIssued) {
             enrollment.certificateIssued = true;
-            enrollment.certificateId = `CN-${Date.now()}-${(0, uuid_1.v4)().slice(0, 6).toUpperCase()}`;
+            enrollment.certificateId = `CN-${Date.now()}-${(0, crypto_1.randomUUID)().slice(0, 6).toUpperCase()}`;
         }
         await enrollment.save();
         res.status(200).json({ success: true, enrollment });

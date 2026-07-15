@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
 import Enrollment from '../models/Enrollment';
 import Course from '../models/Course';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 // @desc    Enroll in a course (free)
 // @route   POST /api/enrollments
@@ -104,7 +104,7 @@ export const updateProgress = async (req: AuthRequest, res: Response): Promise<v
     // Issue certificate if 100%
     if (enrollment.progressPercent === 100 && !enrollment.certificateIssued) {
       enrollment.certificateIssued = true;
-      enrollment.certificateId = `CN-${Date.now()}-${uuidv4().slice(0, 6).toUpperCase()}`;
+      enrollment.certificateId = `CN-${Date.now()}-${randomUUID().slice(0, 6).toUpperCase()}`;
     }
 
     await enrollment.save();
