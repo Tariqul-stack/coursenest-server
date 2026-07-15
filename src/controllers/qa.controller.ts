@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { QAPost, QAAnswer } from '../models/QAPost';
+
 export const getPosts = async (req: Request, res: Response): Promise<void> => {
   try {
     const { search, tag, status, page = 1, limit = 10 } = req.query;
@@ -35,7 +36,7 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
 
 export const getPost = async (req: Request, res: Response): Promise<void> => {
   try {
-    const post = await QAPost.findByIdAndUpdate(
+    const post = await (QAPost as any).findByIdAndUpdate(
       req.params.id,
       { $inc: { views: 1 } },
       { new: true }
@@ -46,7 +47,7 @@ export const getPost = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const answers = await QAAnswer.find({ post: req.params.id })
+    const answers = await (QAAnswer as any).find({ post: req.params.id })
       .populate('author', 'name avatar role')
       .sort({ isAccepted: -1, createdAt: 1 });
 
@@ -79,7 +80,7 @@ export const createPost = async (req: AuthRequest, res: Response): Promise<void>
 
 export const deletePost = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const post = await QAPost.findById(req.params.id);
+    const post = await (QAPost as any).findById(req.params.id);
     if (!post) {
       res.status(404).json({ message: 'Post not found' });
       return;
@@ -89,7 +90,7 @@ export const deletePost = async (req: AuthRequest, res: Response): Promise<void>
       return;
     }
     await post.deleteOne();
-    await QAAnswer.deleteMany({ post: req.params.id });
+    await (QAAnswer as any).deleteMany({ post: req.params.id });
     res.status(200).json({ success: true, message: 'Post deleted' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
@@ -118,7 +119,7 @@ export const createAnswer = async (req: AuthRequest, res: Response): Promise<voi
 
 export const acceptAnswer = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const post = await QAPost.findById(req.params.id);
+    const post = await (QAPost as any).findById(req.params.id);
     if (!post) {
       res.status(404).json({ message: 'Post not found' });
       return;
@@ -127,8 +128,8 @@ export const acceptAnswer = async (req: AuthRequest, res: Response): Promise<voi
       res.status(403).json({ message: 'Only post author can accept answers' });
       return;
     }
-    await QAAnswer.updateMany({ post: req.params.id }, { isAccepted: false });
-    const answer = await QAAnswer.findByIdAndUpdate(
+    await (QAAnswer as any).updateMany({ post: req.params.id }, { isAccepted: false });
+    const answer = await (QAAnswer as any).findByIdAndUpdate(
       req.params.answerId,
       { isAccepted: true },
       { new: true }
@@ -143,7 +144,7 @@ export const acceptAnswer = async (req: AuthRequest, res: Response): Promise<voi
 
 export const deleteAnswer = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const answer = await QAAnswer.findById(req.params.answerId);
+    const answer = await (QAAnswer as any).findById(req.params.answerId);
     if (!answer) {
       res.status(404).json({ message: 'Answer not found' });
       return;
